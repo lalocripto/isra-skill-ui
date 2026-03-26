@@ -1,16 +1,17 @@
 /**
  * API Route: Generate Script
- * Uses Anthropic Claude to generate educational crypto scripts using Isra's methodology
+ * Uses Anthropic Claude to generate educational crypto scripts using selected creator's style
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
-import { buildPrompt, calculateMetadata, ScriptRequest } from '@/lib/isra-skill';
+import { buildPrompt, buildPromptFromStyle, calculateMetadata, ScriptRequest } from '@/lib/isra-skill';
+import { getCreatorStyle } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
-    const body: ScriptRequest = await request.json();
-    const { topic, contentType, technicalLevel } = body;
+    const body = await request.json();
+    const { topic, contentType, technicalLevel, styleId } = body;
 
     // Validate inputs
     if (!topic || !contentType || !technicalLevel) {
@@ -20,8 +21,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Build prompt using Isra's methodology
-    const prompt = buildPrompt({ topic, contentType, technicalLevel });
+    // Fetch creator style if provided
+    let prompt: string;
+    if (styleId) {
+      const style = await getCreatorStyle(styleId);
+      if (!style) {
+        return NextResponse.json(
+          { error: 'Creator style not found' },
+          { status: 404 }
+        );
+      }
+
+      // Build custom prompt using selected style
+      prompt = buildPromptFromStyle(style, { topic, contentType, technicalLevel });
+    } else {
+      // Fallback to Isra's methodology
+      prompt = buildPrompt({ topic, contentType, technicalLevel });
+    }
 
     // Call Anthropic API
     const anthropic = new Anthropic({

@@ -1,7 +1,9 @@
 /**
  * Isra Crypto Education Skill Parser
- * Extracts methodology and frameworks from SKILL.md
+ * Extracts methodology and frameworks from SKILL.md or custom creator styles
  */
+
+import type { CreatorStyle } from './supabase';
 
 export interface ScriptRequest {
   topic: string;
@@ -163,4 +165,56 @@ export function calculateMetadata(script: string): ScriptMetadata {
     estimatedDuration,
     complexity
   };
+}
+
+/**
+ * Build prompt from custom creator style
+ */
+export function buildPromptFromStyle(
+  style: CreatorStyle,
+  request: ScriptRequest
+): string {
+  const { topic, contentType, technicalLevel } = request;
+  const targetWords = getTargetWordCount(contentType);
+  const template = style.templates?.[contentType];
+
+  const prompt = `You are writing content in the style of ${style.name}.
+
+**VOICE & TONE:**
+- Tone: ${style.voice_signature.tone}
+- Style: ${style.voice_signature.style}
+- Perspective: ${style.voice_signature.perspective}
+${style.voice_signature.key_traits ? `- Key traits: ${style.voice_signature.key_traits.join(', ')}` : ''}
+${style.voice_signature.audience ? `- Audience: ${style.voice_signature.audience}` : ''}
+
+**CORE FRAMEWORKS:**
+${style.frameworks.map((f, i) => `
+${i + 1}. **${f.name}**: ${f.description}
+   - Structure: ${f.structure}
+   - Example: "${f.example}"
+`).join('\n')}
+
+**SIGNATURE PHRASES (use naturally):**
+${style.signature_phrases.slice(0, 6).map(p => `- "${p}"`).join('\n')}
+
+**ANTI-PATTERNS (never do these):**
+${style.anti_patterns.slice(0, 6).map(p => `- ${p}`).join('\n')}
+
+**TASK:**
+Write a ${contentType} script about: **${topic}**
+
+**SPECS:**
+- Content Type: ${contentType}
+- Technical Level: ${technicalLevel}
+- Target: ~${targetWords} words (${getEstimatedDuration(contentType)})
+- Audience: ${getAudienceDescription(technicalLevel)}
+
+${template ? `**STRUCTURE:**
+${template.structure}
+` : ''}
+
+**OUTPUT:**
+Respond with ONLY the script in markdown. No meta-commentary.`;
+
+  return prompt;
 }

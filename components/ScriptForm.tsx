@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import StyleSelector from './StyleSelector';
 
 interface ScriptFormProps {
   onGenerate: (data: {
     topic: string;
     contentType: string;
     technicalLevel: string;
+    styleId: string;
   }) => void;
   isLoading: boolean;
 }
@@ -15,20 +17,25 @@ export default function ScriptForm({ onGenerate, isLoading }: ScriptFormProps) {
   const [topic, setTopic] = useState('');
   const [contentType, setContentType] = useState('TikTok 60s');
   const [technicalLevel, setTechnicalLevel] = useState('Principiante');
+  const [styleId, setStyleId] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!topic.trim()) return;
+    if (!topic.trim() || !styleId) return;
     
     onGenerate({
       topic: topic.trim(),
       contentType,
       technicalLevel,
+      styleId,
     });
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Style Selector */}
+      <StyleSelector selectedStyleId={styleId} onSelect={setStyleId} />
+
       {/* Topic Input */}
       <div>
         <label htmlFor="topic" className="block text-sm font-medium text-gray-200 mb-2">
@@ -88,7 +95,7 @@ export default function ScriptForm({ onGenerate, isLoading }: ScriptFormProps) {
       {/* Generate Button */}
       <button
         type="submit"
-        disabled={isLoading || !topic.trim()}
+        disabled={isLoading || !topic.trim() || !styleId}
         className="w-full px-6 py-4 bg-[#F7B11F] text-[#111111] font-bold rounded-lg hover:bg-[#e5a00f] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {isLoading ? (
@@ -101,7 +108,7 @@ export default function ScriptForm({ onGenerate, isLoading }: ScriptFormProps) {
           </>
         ) : (
           <>
-            Generar con Voice Isra 🚀
+            Generar Guion 🚀
           </>
         )}
       </button>

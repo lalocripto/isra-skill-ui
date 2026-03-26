@@ -17,6 +17,7 @@ interface GeneratedScript {
     topic: string;
     contentType: string;
     technicalLevel: string;
+    styleId: string;
   };
   timestamp: number;
   savedToNotion: boolean;
@@ -35,6 +36,7 @@ export default function Home() {
     topic: string;
     contentType: string;
     technicalLevel: string;
+    styleId: string;
   }) => {
     setIsGenerating(true);
     setError(null);
@@ -146,10 +148,10 @@ export default function Home() {
       <header className="bg-gray-900 border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-            🐸 Isra Crypto Education Generator
+            🎬 Creator Voice Generator
           </h1>
           <p className="text-gray-400 mt-2 text-sm">
-            Genera guiones educativos crypto usando la metodología anti-hype de Isra
+            Genera guiones usando el estilo de cualquier creator - Isra, Dan Koe, Gary Vee, y más
           </p>
         </div>
       </header>

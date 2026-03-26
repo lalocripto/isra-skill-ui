@@ -1,12 +1,20 @@
-# 🐸 Isra Crypto Education Generator
+# 🎬 Creator Voice Platform
 
-Interfaz web para generar guiones educativos crypto usando la metodología anti-hype de Isra.
+Plataforma para generar contenido usando el voice y estilo de cualquier creator.
 
 **🌐 Producción:** https://isra-skill-ui.vercel.app
 
+## 🆕 What's New (v2.0)
+
+- **🎯 Multi-Creator Support** — Elige entre Isra, Dan Koe, Gary Vee, y más
+- **🔍 Auto-Analyzer** — Pega URL de canal de YouTube y extrae voice automáticamente
+- **💾 Supabase Integration** — Todos los estilos guardados en base de datos
+- **🧠 Claude-Powered Analysis** — Extrae frameworks, patterns, y signature phrases
+- **🎨 Dynamic Generation** — Genera guiones usando cualquier creator voice
+
 ## 🎯 Features
 
-- **Generación de guiones** usando Claude Sonnet 4.5 + metodología de Isra
+- **Generación de guiones** usando Claude Sonnet 4.5 + estilo del creator seleccionado
 - **Preview editable** antes de guardar
 - **Integración Notion** automática (DB: Publicaciones Programadas)
 - **Historial de sesión** (últimos 10 guiones)
@@ -17,8 +25,11 @@ Interfaz web para generar guiones educativos crypto usando la metodología anti-
 - **Next.js 14** (App Router)
 - **TypeScript**
 - **Tailwind CSS**
-- **Anthropic SDK** (Claude API)
+- **Anthropic SDK** (Claude Sonnet 4.5)
 - **Notion API**
+- **Supabase** (Creator styles database)
+- **yt-dlp** (YouTube video extraction)
+- **faster-whisper** (Transcription)
 
 ## 📋 Setup
 
@@ -28,24 +39,31 @@ Interfaz web para generar guiones educativos crypto usando la metodología anti-
 npm install
 ```
 
-### 2. Configurar variables de entorno
+### 2. Configurar Supabase
+
+Sigue las instrucciones en [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) para crear la tabla `creator_styles`.
+
+### 3. Configurar variables de entorno
 
 Crea un archivo `.env.local` en la raíz del proyecto:
 
 ```bash
-# Anthropic API Key (obtener de https://console.anthropic.com)
+# Anthropic API Key
 ANTHROPIC_API_KEY=sk-ant-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-# Notion Integration Token (obtener de https://www.notion.so/my-integrations)
+# Notion Integration
 NOTION_TOKEN=secret_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
-# Notion Database ID (ID de la DB "Publicaciones Programadas")
 NOTION_DATABASE_ID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGci...
+SUPABASE_SERVICE_ROLE_KEY=service_role_key
 ```
 
-**⚠️ IMPORTANTE:** Actualiza `ANTHROPIC_API_KEY` con tu key real antes de correr.
+**⚠️ IMPORTANTE:** Actualiza todas las keys con valores reales antes de correr.
 
-### 3. Correr desarrollo
+### 4. Correr desarrollo
 
 ```bash
 npm run dev
@@ -55,32 +73,53 @@ Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
 ## 📖 Uso
 
-1. **Ingresa un tema/pregunta** (ej: "¿Qué es un DEX?")
-2. **Selecciona tipo de contenido** (TikTok 60s, Reel 90s, Thread, Artículo corto)
-3. **Selecciona nivel técnico** (Principiante, Intermedio, Avanzado)
-4. **Click "Generar con Voice Isra 🚀"**
-5. **Edita el guion** en el preview si es necesario
-6. **Guarda en Notion** o **copia al portapapeles**
+### Generar Guión
+
+1. **Selecciona un estilo de creator** (Isra, Dan Koe, Gary Vee, etc.)
+2. **Ingresa un tema/pregunta** (ej: "¿Qué es un DEX?")
+3. **Selecciona tipo de contenido** (TikTok 60s, Reel 90s, Thread, Artículo corto)
+4. **Selecciona nivel técnico** (Principiante, Intermedio, Avanzado)
+5. **Click "Generar Guion 🚀"**
+6. **Edita el guion** en el preview si es necesario
+7. **Guarda en Notion** o **copia al portapapeles**
+
+### Analizar Nuevo Creator
+
+1. Ve a **`/analyzer`** o click "Analizar Nuevo Creator"
+2. **Pega la URL del canal de YouTube**
+3. (Opcional) Agrega el nombre del creator
+4. **Selecciona cuántos videos analizar** (5-15)
+5. **Click "Analizar Creator 🔍"**
+6. Espera ~10-15 minutos mientras extrae transcripts y analiza
+7. El nuevo estilo se guarda automáticamente y está disponible en el generador
 
 ## 🔧 Estructura del Proyecto
 
 ```
 isra-skill-ui/
 ├── app/
-│   ├── layout.tsx           # Layout principal con metadata
-│   ├── page.tsx             # Página principal (generador)
-│   ├── api/
-│   │   ├── generate-script/route.ts  # Genera guiones con Claude
-│   │   └── save-to-notion/route.ts   # Guarda en Notion DB
-│   └── globals.css
+│   ├── layout.tsx                     # Layout principal
+│   ├── page.tsx                       # Generador principal
+│   ├── analyzer/page.tsx              # Analyzer de nuevos creators
+│   └── api/
+│       ├── generate-script/route.ts   # Genera guiones con creator style
+│       ├── save-to-notion/route.ts    # Guarda en Notion
+│       ├── styles/route.ts            # GET creator styles
+│       └── analyze-creator/route.ts   # POST analizar canal YouTube
 ├── components/
-│   ├── ScriptForm.tsx       # Formulario de inputs
-│   ├── ScriptPreview.tsx    # Preview + edición + acciones
-│   └── ScriptHistory.tsx    # Historial lateral
+│   ├── ScriptForm.tsx                 # Form con StyleSelector
+│   ├── ScriptPreview.tsx              # Preview + edición
+│   ├── ScriptHistory.tsx              # Historial lateral
+│   └── StyleSelector.tsx              # Selector de creator style
 ├── lib/
-│   ├── isra-skill.ts        # Parser de metodología Isra + prompts
-│   └── notion.ts            # Cliente Notion API
-├── .env.local               # Variables de entorno
+│   ├── isra-skill.ts                  # Prompt builders
+│   ├── notion.ts                      # Cliente Notion
+│   ├── supabase.ts                    # Cliente Supabase
+│   └── creator-analyzer.ts            # YouTube extraction + analysis
+├── supabase/
+│   └── schema.sql                     # Database schema
+├── .env.local
+├── SUPABASE_SETUP.md                  # Setup guide
 └── README.md
 ```
 
