@@ -2,6 +2,8 @@
 
 Interfaz web para generar guiones educativos crypto usando la metodología anti-hype de Isra.
 
+**🌐 Producción:** https://isra-skill-ui.vercel.app
+
 ## 🎯 Features
 
 - **Generación de guiones** usando Claude Sonnet 4.5 + metodología de Isra
@@ -84,30 +86,36 @@ isra-skill-ui/
 
 ## 🚀 Deploy
 
-### Vercel
+**Estado:** ✅ Deployado en producción
 
-1. **Push a GitHub** (si no lo has hecho):
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit: Isra Skill UI"
-   gh repo create isra-skill-ui --public --source=. --push
-   ```
+- **URL:** https://isra-skill-ui.vercel.app
+- **GitHub:** https://github.com/lalocripto/isra-skill-ui
+- **Vercel Project:** eriosfg008-4655s-projects/isra-skill-ui
 
-2. **Deploy a Vercel**:
-   ```bash
-   vercel
-   ```
+### Environment Variables Configuradas
 
-3. **Configura env vars en Vercel**:
-   - Ve a tu proyecto en [Vercel Dashboard](https://vercel.com/dashboard)
-   - Settings → Environment Variables
-   - Agrega: `ANTHROPIC_API_KEY`, `NOTION_TOKEN`, `NOTION_DATABASE_ID`
+✅ `NOTION_TOKEN` — Configurado en producción  
+✅ `NOTION_DATABASE_ID` — Configurado en producción  
+⚠️ `ANTHROPIC_API_KEY` — **PENDIENTE: Lalo debe agregarlo**
 
-4. **Redeploy** para aplicar las variables:
-   ```bash
-   vercel --prod
-   ```
+### 🔑 Cómo Agregar ANTHROPIC_API_KEY
+
+1. Ve a [Vercel Dashboard](https://vercel.com/eriosfg008-4655s-projects/isra-skill-ui/settings/environment-variables)
+2. Click en **"Add New"**
+3. **Name:** `ANTHROPIC_API_KEY`
+4. **Value:** Tu API key de Claude (obtener de https://console.anthropic.com)
+5. **Environment:** Production, Preview, Development (marcar todas)
+6. Click **Save**
+7. Ve a la pestaña **Deployments** y click **Redeploy** en el último deployment
+
+### Redeploy Manual (si es necesario)
+
+```bash
+cd isra-skill-ui
+vercel --prod
+```
+
+Ver [DEPLOYMENT.md](./DEPLOYMENT.md) para más detalles.
 
 ## 📝 Metodología Isra
 
